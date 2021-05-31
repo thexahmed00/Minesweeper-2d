@@ -327,6 +327,11 @@ void Graphics::DrawRect( int x0,int y0,int x1,int y1,Color c )
 	}
 }
 
+RectI Graphics::get_rect()
+{
+	return {0, ScreenWidth, 0, ScreenHeight};
+}
+
 
 //////////////////////////////////////////////////
 //           Graphics Exception

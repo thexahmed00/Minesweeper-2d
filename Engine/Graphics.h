@@ -59,6 +59,7 @@ public:
 	}
 	void PutPixel( int x,int y,Color c );
 	void DrawRect( int x0,int y0,int x1,int y1,Color c );
+	RectI get_rect();
 	void DrawRect( const RectI& rect,Color c )
 	{
 		DrawRect( rect.left,rect.top,rect.right,rect.bottom,c );
