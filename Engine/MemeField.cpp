@@ -36,6 +36,7 @@ void MemeField::Tile::Draw( const Vei2& screenPos,bool fucked,Graphics& gfx ) co
 			}
 			else
 			{
+
 				SpriteCodex::DrawTileBomb( screenPos,gfx );
 			}
 			break;
@@ -52,11 +53,13 @@ void MemeField::Tile::Draw( const Vei2& screenPos,bool fucked,Graphics& gfx ) co
 			}
 			else
 			{
+				//SpriteCodex::DrawTileNumber(screenPos, nNeighborMemes, gfx);
+
 				SpriteCodex::DrawTileButton( screenPos,gfx );
 			}
 			break;
 		case State::Flagged:
-			if( HasMeme() )
+			if( !HasMeme() )
 			{
 				SpriteCodex::DrawTileBomb( screenPos,gfx );
 				SpriteCodex::DrawTileFlag( screenPos,gfx );
@@ -68,7 +71,7 @@ void MemeField::Tile::Draw( const Vei2& screenPos,bool fucked,Graphics& gfx ) co
 			}
 			break;
 		case State::Revealed:
-			if( !HasMeme() )
+			if(! HasMeme() )
 			{
 				SpriteCodex::DrawTileNumber( screenPos,nNeighborMemes,gfx );
 			}
@@ -110,6 +113,13 @@ bool MemeField::Tile::IsFlagged() const
 	return state == State::Flagged;
 }
 
+bool MemeField::Tile::hasNumber() 
+{
+	hasnumber = true;
+	return hasnumber;
+}
+
+
 void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 {
 	assert( nNeighborMemes == -1 );
@@ -118,6 +128,7 @@ void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 
 MemeField::MemeField( int nMemes,Vei2& center ):
 	Topleft(center-Vei2(width*SpriteCodex::tileSize,height*SpriteCodex::tileSize)/2)
+
 {
 	assert( nMemes > 0 && nMemes < width * height );
 	std::random_device rd;
@@ -176,9 +187,13 @@ void MemeField::OnRevealClick( const Vei2& screenPos )
 			if( tile.HasMeme() )
 			{
 				isFucked = true;
+				sound_.Play();
 			}
 		}
 	}
+
+	
+
 }
 
 void MemeField::OnFlagClick( const Vei2 & screenPos )
@@ -194,6 +209,19 @@ void MemeField::OnFlagClick( const Vei2 & screenPos )
 		}
 	}
 }
+
+bool MemeField::isWin()
+{
+	for(const Tile& t:field)
+	{
+		if(t.HasMeme() && !t.IsFlagged() || !t.HasMeme() && !t.IsRevealed())
+		{
+			return false;
+		}
+	}
+			return  true;
+}
+
 
 MemeField::Tile& MemeField::TileAt( const Vei2& gridPos )
 {
@@ -228,6 +256,5 @@ int MemeField::CountNeighborMemes( const Vei2 & gridPos )
 			}
 		}
 	}
-
 	return count;
 }

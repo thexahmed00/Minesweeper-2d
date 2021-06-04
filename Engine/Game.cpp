@@ -20,12 +20,13 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	field( 20,gfx.get_rect().GetCenter() )
+	field( 2,gfx.get_rect().GetCenter() )
 {
 }
 
@@ -64,4 +65,8 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	field.Draw( gfx );
+	if(field.isWin())
+	{
+		SpriteCodex::DrawWin(gfx.get_rect().GetCenter(), gfx);
+	}
 }
