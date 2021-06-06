@@ -181,15 +181,7 @@ void MemeField::OnRevealClick( const Vei2& screenPos )
 		const Vei2 gridPos = ScreenToGrid( screenPos );
 		assert( gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height );
 		Tile& tile = TileAt( gridPos );
-		if( !tile.IsRevealed() && !tile.IsFlagged() )
-		{
-			tile.Reveal();
-			if( tile.HasMeme() )
-			{
-				isFucked = true;
-				sound_.Play();
-			}
-		}
+		onFirstclick(gridPos);
 	}
 
 	
@@ -220,6 +212,41 @@ bool MemeField::isWin()
 		}
 	}
 			return  true;
+}
+
+void MemeField::onFirstclick(const Vei2& gridPos)
+{
+	
+	Tile& tile = TileAt(gridPos);
+	if (!tile.IsRevealed() && !tile.IsFlagged())
+	{
+		tile.Reveal();
+		if (tile.HasMeme())
+		{
+			isFucked = true;
+			sound_.Play();
+		}
+		else if (tile.noNumbers())
+		{
+			const int xStart = std::max(0, gridPos.x - 1);
+			const int yStart = std::max(0, gridPos.y - 1);
+			const int xEnd = std::min(width - 1, gridPos.x + 1);
+			const int yEnd = std::min(height - 1, gridPos.y + 1);
+
+			for (Vei2 gridPos = { xStart,yStart }; gridPos.y <= yEnd; gridPos.y++)
+			{
+				for (gridPos.x = xStart; gridPos.x <= xEnd; gridPos.x++)
+				{
+					onFirstclick(gridPos);
+				}
+			}
+		}
+	}
+}
+
+bool MemeField::Tile::noNumbers() const
+{
+	return nNeighborMemes == 0;
 }
 
 
